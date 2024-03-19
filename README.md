@@ -12,3 +12,4 @@ Daily Update:
   - Developed a node.js code that converts pdf file into excel file using the API
     pdfrest(pdf to excel conversion API) for free without watermarks and no limitations
     on pages to be converted.
+  - Next Plan - Organize the codes and be ready for the finalization of the project 
