@@ -8,7 +8,7 @@ const xlsx = require('xlsx');
 
 const apiKey = '39fbc901-2c3f-40ec-bee0-6096b60d75c6';
 
-// Function to split PDF into individual pages
+// Split pdf
 async function splitPDF(inputPath) {
     const pdfDoc = await PDFDocument.load(fs.readFileSync(inputPath));
     const totalPages = pdfDoc.getPageCount();
@@ -27,7 +27,7 @@ async function splitPDF(inputPath) {
     return splitPaths;
 }
 
-// Function to convert PDF page to Excel
+// Convert PDF (API)
 async function convertToExcel(inputPath) {
     const fileStream = fs.createReadStream(inputPath);
     const data = new FormData();
@@ -53,7 +53,7 @@ async function convertToExcel(inputPath) {
     }
 }
 
-// Function to download file from URL
+// Download the converted files
 async function downloadFile(url, outputPath) {
     const response = await axios({
         url: url,
@@ -100,9 +100,9 @@ async function mergeExcelFiles(filePaths, outputFilePath) {
 }
 
 
-// Main function to split, convert, download, and merge PDF pages
+// main function, this is where i put the file and where we get the output
 async function main() {
-    const inputPDF = 'test3.pdf'; // Replace with your input PDF file
+    const inputPDF = 'test3.pdf'; // PDF Sample
     const splitPaths = await splitPDF(inputPDF);
 
     const excelUrls = [];
@@ -111,7 +111,7 @@ async function main() {
         if (excelUrl) {
             excelUrls.push(excelUrl);
         }
-        fs.unlinkSync(splitPath); // Delete the split PDF after conversion
+        fs.unlinkSync(splitPath);
     }
 
     const downloadedExcelPaths = [];
@@ -121,10 +121,10 @@ async function main() {
         downloadedExcelPaths.push(outputPath);
     }
 
-    const mergedExcel = path.join(__dirname, 'merged_output12345.xlsx');
+    const mergedExcel = path.join(__dirname, 'merged_output12345.xlsx'); // This is the Output
     await mergeExcelFiles(downloadedExcelPaths, mergedExcel);
     console.log('Merged Excel file:', mergedExcel);
 }
 
-// Run the main function
+// call main function
 main().catch(error => console.error('Error:', error));
