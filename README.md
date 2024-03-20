@@ -7,7 +7,7 @@ Daily Update:
   - Managed to develop a code for splitting PDF Pages.
   - Managed to develop a code for Merging PDF pages.
   - Next Plan - Switch to nodejs because python doesnt auto install libraries/modules when electronjs is packaged/built.
-  - ![Alt text](https://github.com/KuroKami2023/PDF-Toolkit-latest/blob/main/home.png?raw=true)
+    ![Alt text](https://github.com/KuroKami2023/PDF-Toolkit-latest/blob/main/home.png?raw=true)
 
 ○ `03/19/2024`
   - Developed a node.js code that converts pdf file into excel file using the API
@@ -16,7 +16,10 @@ Daily Update:
   - Next Plan - Fix the merge Excel files to retain the formatting, Organize the codes and be ready for the finalization of the project
     
 ○ `03/20/2024`
-
-![Alt text](https://github.com/KuroKami2023/PDF-Toolkit-latest/blob/main/split%20pdf.png?raw=true)
-![Alt text](https://github.com/KuroKami2023/PDF-Toolkit-latest/blob/main/success%20tracking.png?raw=true)
-![Alt text](https://github.com/KuroKami2023/PDF-Toolkit-latest/blob/main/error%20tracking.png?raw=true)
+  - Converted the split pdf code from python to node.js.
+  - Designed and developed UI for the split pdf on electron js.
+  - Added success and error tracking.
+  - Next Plan - Do the same on merge pdf. Continue fixing the merge Excel files to retain the formatting.
+  ![Alt text](https://github.com/KuroKami2023/PDF-Toolkit-latest/blob/main/split%20pdf.png?raw=true)
+  ![Alt text](https://github.com/KuroKami2023/PDF-Toolkit-latest/blob/main/success%20tracking.png?raw=true)
+  ![Alt text](https://github.com/KuroKami2023/PDF-Toolkit-latest/blob/main/error%20tracking.png?raw=true)
