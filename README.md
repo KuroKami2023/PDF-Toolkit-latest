@@ -16,4 +16,4 @@ Daily Update:
     
 ○ `03/20/2024`
 
-![Alt text]([image link](https://github.com/KuroKami2023/PDF-Toolkit-latest/blob/main/split%20pdf.png)https://github.com/KuroKami2023/PDF-Toolkit-latest/blob/main/split%20pdf.png?raw=true)
+![Alt text](https://github.com/KuroKami2023/PDF-Toolkit-latest/blob/main/split%20pdf.png?raw=true)
