@@ -53,21 +53,4 @@
       
 </body>
 <script src="../JS/active.js" defer></script>
-<script>
-    const express = require('express');
-const app = express();
-const port = 3000;
-
-document.querySelector('DOMContentLoaded', function() {
-    app.get('/startServer', (req, res) => {
-        console.log('Express server started.');
-        res.send('Express server started.');
-      });
-      
-      app.listen(port, () => {
-        console.log(`Server listening at http://localhost:${port}`);
-      });
-      
-});
-</script>
 </html>

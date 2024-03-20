@@ -127,4 +127,36 @@ async function main() {
 }
 
 // call main function
-main().catch(error => console.error('Error:', error));
+
+// Add your existing JavaScript code here
+
+async function convertPDF() {
+    const fileInput = document.getElementById('pdfInput');
+    const pdfFile = fileInput.files[0];
+
+    if (!pdfFile) {
+        alert('Please select a PDF file.');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', pdfFile);
+    main().catch(error => console.error('Error:', error));
+
+    const config = {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            'Api-Key': apiKey,
+        },
+        data: formData,
+    };
+
+    try {
+        const response = await axios.post('https://api.pdfrest.com/excel', formData, config);
+        const outputUrl = response.data.outputUrl;
+        document.getElementById('conversionStatus').innerHTML = `<a href="${outputUrl}" download>Download Excel</a>`;
+    } catch (error) {
+        console.error('Error converting PDF to Excel:', error);
+        document.getElementById('conversionStatus').innerHTML = 'Error converting PDF to Excel. Please try again.';
+    }
+}

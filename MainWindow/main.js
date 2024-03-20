@@ -85,3 +85,12 @@ ipcMain.on('save-excel', async (event, excelBuffer) => {
       event.reply('excel-saved', filePath);
   }
 });
+
+ipcMain.on('open-save-dialog', async (event, args) => {
+  const { filePaths } = await dialog.showOpenDialog({
+      title: 'Save Split PDF',
+      defaultPath: args.defaultPath,
+      properties: ['openDirectory']
+  });
+  event.sender.send('selected-directory', filePaths[0]);
+});
