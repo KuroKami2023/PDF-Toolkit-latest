@@ -102,7 +102,7 @@ async function mergeExcelFiles(filePaths, outputFilePath) {
 
 // main function, this is where i put the file and where we get the output
 async function main() {
-    const inputPDF = 'moogootest.pdf'; // PDF Sample
+    const inputPDF = 'test2.pdf'; // PDF Sample
     const splitPaths = await splitPDF(inputPDF);
 
     const excelUrls = [];
@@ -121,7 +121,7 @@ async function main() {
         downloadedExcelPaths.push(outputPath);
     }
 
-    const mergedExcel = path.join(__dirname, 'merged_output(Moogoo).xlsx'); // This is the Output
+    const mergedExcel = path.join(__dirname, 'output.xlsx'); // This is the Output
     await mergeExcelFiles(downloadedExcelPaths, mergedExcel);
     console.log('Merged Excel file:', mergedExcel);
 }

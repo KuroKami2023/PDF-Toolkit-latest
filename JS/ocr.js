@@ -8,24 +8,37 @@ const xlsx = require('xlsx');
 
 const apiKey = '39fbc901-2c3f-40ec-bee0-6096b60d75c6';
 
-// Split pdf
-async function splitPDF(inputPath) {
-    const pdfDoc = await PDFDocument.load(fs.readFileSync(inputPath));
-    const totalPages = pdfDoc.getPageCount();
-    const splitPaths = [];
-
-    for (let i = 0; i < totalPages; i++) {
-        const newPdf = await PDFDocument.create();
-        const [copiedPage] = await newPdf.copyPages(pdfDoc, [i]);
-        newPdf.addPage(copiedPage);
-
-        const outputPath = path.join(__dirname, `page_${i + 1}.pdf`);
-        fs.writeFileSync(outputPath, await newPdf.save());
-        splitPaths.push(outputPath);
+document.getElementById('convertBtn').addEventListener('click', async () => {
+    const inputFiles = document.getElementById('pdfInput').files;
+    if (inputFiles.length === 0) {
+        alert('Please select at least one PDF file to convert.');
+        return;
     }
 
-    return splitPaths;
-}
+    const inputPaths = [];
+    for (let i = 0; i < inputFiles.length; i++) {
+        inputPaths.push(inputFiles[i].path); // Assuming you're using Electron or similar to access file paths
+    }
+
+    const excelUrls = [];
+    for (const inputPath of inputPaths) {
+        const excelUrl = await convertToExcel(inputPath);
+        if (excelUrl) {
+            excelUrls.push(excelUrl);
+        }
+    }
+
+    const downloadedExcelPaths = [];
+    for (let i = 0; i < excelUrls.length; i++) {
+        const outputPath = path.join(__dirname, `output_${i + 1}.xlsx`);
+        await downloadFile(excelUrls[i], outputPath);
+        downloadedExcelPaths.push(outputPath);
+    }
+
+    const mergedExcel = path.join(__dirname, 'Output_File.xlsx'); // This is the Output
+    await mergeExcelFiles(downloadedExcelPaths, mergedExcel);
+    console.log('Merged Excel file:', mergedExcel);
+});
 
 // Convert PDF (API)
 async function convertToExcel(inputPath) {
@@ -48,10 +61,21 @@ async function convertToExcel(inputPath) {
         const response = await axios(config);
         return response.data.outputUrl;
     } catch (error) {
-        console.log('Error converting PDF to Excel:', error);
+        if (error.response) {
+            // The request was made and the server responded with a status code
+            console.log('Error response status:', error.response.status);
+            console.log('Error response data:', error.response.data);
+        } else if (error.request) {
+            // The request was made but no response was received
+            console.log('Error request:', error.request);
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log('Error:', error.message);
+        }
         return null;
     }
 }
+
 
 // Download the converted files
 async function downloadFile(url, outputPath) {
@@ -71,92 +95,30 @@ async function downloadFile(url, outputPath) {
 }
 
 async function mergeExcelFiles(filePaths, outputFilePath) {
-  const mergedWorkbook = new ExcelJS.Workbook();
+    const mergedWorkbook = new ExcelJS.Workbook();
 
-  let worksheetCounter = 1;
+    let worksheetCounter = 1;
 
-  for (const filePath of filePaths) {
-      const workbook = xlsx.readFile(filePath);
+    for (const filePath of filePaths) {
+        const workbook = xlsx.readFile(filePath);
 
-      workbook.SheetNames.forEach(sheetName => {
-          let newSheetName = sheetName;
-          let counter = 1;
-          while (mergedWorkbook.getWorksheet(newSheetName)) {
-              newSheetName = `${sheetName} (${counter})`;
-              counter++;
-          }
+        workbook.SheetNames.forEach(sheetName => {
+            let newSheetName = sheetName;
+            let counter = 1;
+            while (mergedWorkbook.getWorksheet(newSheetName)) {
+                newSheetName = `${sheetName} (${counter})`;
+                counter++;
+            }
 
-          const worksheet = workbook.Sheets[sheetName];
-          const data = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
-          const newWorksheet = mergedWorkbook.addWorksheet(newSheetName);
+            const worksheet = workbook.Sheets[sheetName];
+            const data = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
+            const newWorksheet = mergedWorkbook.addWorksheet(newSheetName);
 
-          for (let i = 0; i < data.length; i++) {
-              newWorksheet.addRow(data[i]);
-          }
-      });
-  }
-
-  await mergedWorkbook.xlsx.writeFile(outputFilePath);
-}
-
-
-// main function, this is where i put the file and where we get the output
-async function main() {
-    const inputPDF = 'moogootest.pdf'; // PDF Sample
-    const splitPaths = await splitPDF(inputPDF);
-
-    const excelUrls = [];
-    for (const splitPath of splitPaths) {
-        const excelUrl = await convertToExcel(splitPath);
-        if (excelUrl) {
-            excelUrls.push(excelUrl);
-        }
-        fs.unlinkSync(splitPath);
+            for (let i = 0; i < data.length; i++) {
+                newWorksheet.addRow(data[i]);
+            }
+        });
     }
 
-    const downloadedExcelPaths = [];
-    for (let i = 0; i < excelUrls.length; i++) {
-        const outputPath = path.join(__dirname, `output_${i + 1}.xlsx`);
-        await downloadFile(excelUrls[i], outputPath);
-        downloadedExcelPaths.push(outputPath);
-    }
-
-    const mergedExcel = path.join(__dirname, 'merged_output(Moogoo).xlsx'); // This is the Output
-    await mergeExcelFiles(downloadedExcelPaths, mergedExcel);
-    console.log('Merged Excel file:', mergedExcel);
-}
-
-// call main function
-
-// Add your existing JavaScript code here
-
-async function convertPDF() {
-    const fileInput = document.getElementById('pdfInput');
-    const pdfFile = fileInput.files[0];
-
-    if (!pdfFile) {
-        alert('Please select a PDF file.');
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('file', pdfFile);
-    main().catch(error => console.error('Error:', error));
-
-    const config = {
-        headers: {
-            'Content-Type': 'multipart/form-data',
-            'Api-Key': apiKey,
-        },
-        data: formData,
-    };
-
-    try {
-        const response = await axios.post('https://api.pdfrest.com/excel', formData, config);
-        const outputUrl = response.data.outputUrl;
-        document.getElementById('conversionStatus').innerHTML = `<a href="${outputUrl}" download>Download Excel</a>`;
-    } catch (error) {
-        console.error('Error converting PDF to Excel:', error);
-        document.getElementById('conversionStatus').innerHTML = 'Error converting PDF to Excel. Please try again.';
-    }
+    await mergedWorkbook.xlsx.writeFile(outputFilePath);
 }
